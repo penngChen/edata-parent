@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzsw.provider.dao.SynchronousAllDao">
+    <cache readOnly="true" size="500" flushInterval="60000" eviction="LRU"/>
+
+    <select id="synchronous_jc10Web" resultType="map" parameterType="string">
+              SELECT
+--                 a.BJC100,
+--                 a.AAC001,
+--                 a.AAE005,
+--                 a.AAE010,
+--                 a.SYNC_OUT,
+--                 a.SYNC_IN,
+--                 a.BJC108,
+--                 a.BJC109,
+--                 a.AAE013,
+--                 a.AAE017,
+--                 a.BJC01A,
+--                 a.AAE008,
+--                 a.BJC01B,
+--                 a.BJC01C,
+--                 a.BJC01F,
+--                 a.BJC01H,
+--                 a.BJC01I,
+--                 a.BJC01K,
+--                 a.AAC002,
+--                 a.AAC003,
+--                 a.AAC004,
+--                 a.AAC005,
+--                 a.AAC026
+              *
+            FROM
+                jc10_web a,
+                ac02_area b
+            WHERE
+            a.bjc100 = b.area03
+            AND b.area01  LIKE #{aae017} || '%'
+    </select>
+
+    <select id="synchronous_jc10Web_bjc100_query" resultType="map" parameterType="string">
+        SELECT
+--                 a.BJC100,
+--                 a.AAC001,
+--                 a.AAE005,
+--                 a.AAE010,
+--                 a.SYNC_OUT,
+--                 a.SYNC_IN,
+--                 a.BJC108,
+--                 a.BJC109,
+--                 a.AAE013,
+--                 a.AAE017,
+--                 a.BJC01A,
+--                 a.AAE008,
+--                 a.BJC01B,
+--                 a.BJC01C,
+--                 a.BJC01F,
+--                 a.BJC01H,
+--                 a.BJC01I,
+--                 a.BJC01K,
+--                 a.AAC002,
+--                 a.AAC003,
+--                 a.AAC004,
+--                 a.AAC005,
+--                 a.AAC026
+              *
+            FROM
+            jc10_web a,
+            ac02_area b
+            WHERE a.bjc100 = b.area03
+            AND b.area03 = #{bjc100}
+    </select>
+
+    <update id="synchronous_jc10Web_bjc100_update" parameterType="string" flushCache="true">
+        UPDATE jc10_web
+        SET sync_out = '1'
+        WHERE
+            bjc100 = #{bjc100}
+    </update>
+
+    <select id="synchronous_dc05" resultType="map" parameterType="string">
+              SELECT
+--                 a.BDC050,
+--                 a.AAC001,
+--                 a.BDC051,
+--                 a.BDC052,
+--                 a.BDC053,
+--                 a.BDC054,
+--                 a.BDC055,
+--                 a.BDC056,
+--                 a.BDC057,
+--                 a.AAE017,
+--                 a.BDC058,
+--                 a.AAE013,
+--                 a.SYNC_OUT,
+--                 a.SYNC_IN,
+--                 a.BDC059,
+--                 a.BDC05A,
+--                 a.AAE008,
+--                 a.AAE010,
+--                 a.BDC05B,
+--                 a.BDC05M,
+--                 a.AAC002,
+--                 a.AAC003,
+--                 a.AAC004,
+--                 a.AAE005,
+--                 a.AAC026,
+--                 a.AAC005
+              *
+            FROM
+            dc05 a,
+            ac02_area b
+        WHERE
+            a.bdc050 = b.area03
+            AND b.area01 LIKE #{aae017} || '%'
+    </select>
+
+    <select id="synchronous_dc05_bdc050_query" resultType="map" parameterType="string">
+              SELECT
+--                 a.BDC050,
+--                 a.AAC001,
+--                 a.BDC051,
+--                 a.BDC052,
+--                 a.BDC053,
+--                 a.BDC054,
+--                 a.BDC055,
+--                 a.BDC056,
+--                 a.BDC057,
+--                 a.AAE017,
+--                 a.BDC058,
+--                 a.AAE013,
+--                 a.SYNC_OUT,
+--                 a.SYNC_IN,
+--                 a.BDC059,
+--                 a.BDC05A,
+--                 a.AAE008,
+--                 a.AAE010,
+--                 a.BDC05B,
+--                 a.BDC05M,
+--                 a.AAC002,
+--                 a.AAC003,
+--                 a.AAC004,
+--                 a.AAE005,
+--                 a.AAC026,
+--                 a.AAC005
+              *
+            FROM
+            dc05 a,
+            ac02_area b
+            WHERE a.bdc050 = b.area03
+            AND b.area03 = #{bdc050}
+    </select>
+
+    <update id="synchronous_dc05_bdc050_update" parameterType="string" flushCache="true">
+        UPDATE dc05
+        SET sync_out = '1'
+        WHERE
+            bdc050 = #{bdc050}
+    </update>
+
+
+</mapper>

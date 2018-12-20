@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://code.alibabatech.com/schema/dubbo
+http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="dubbo-provider"/>
+
+    <!-- 使用zookeeper注册中心暴露服务地址 -->
+    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181" timeout="120000"/>
+
+    <!-- 用dubbo协议在20880端口暴露服务 -->
+    <dubbo:protocol name="dubbo" port="20880"/>
+
+    <!--去掉超时重试机制-->
+    <dubbo:provider delay="-1" retries="0" filter="exceptionFilter" timeout="300000" loadbalance="roundrobin" accepts="0"/>
+
+    <!-- 暴露dubbo服务的方式一-->
+    <!-- 使用注解方式暴露接口，会自动扫描package下所有包中dubbo相关的注解，这样就不用在xml中再针对每个服务接口配置dubbo:api interface-->
+    <dubbo:annotation package="com.tzsw.provider.service"/>
+
+    <dubbo:service interface="com.tzsw.api.service.Dc05WebService" ref="dc05WebService"/>
+    <bean id="dc05WebService" class="com.tzsw.provider.service.Dc05WebServiceImpl"/>
+
+    <dubbo:service interface="com.tzsw.api.service.Jc10WebService" ref="jc10WebService"/>
+    <bean id="jc10WebService" class="com.tzsw.provider.service.Jc10WebServiceImpl"/>
+
+
+    <!-- 暴露dubbo服务的方式二 -->
+    <!-- 使用xml配置方式申明暴露一个接口服务，在程序启动的时候会自动注册到zookeeper。
+         等同于在类上打@service注解，打了注解就必须要用annotation指定启动扫描路径，使用这种方式，就不需要指定annotation了-->
+    <!--<dubbo:service interface="com.tzsw.api.service.Datagrid_ab01Service" ref="datagrid_ab01Service"/>-->
+     <!--&lt;!&ndash;具体的实现bean，id与上面的ref要一致&ndash;&gt;-->
+    <!--<bean id="datagrid_ab01Service" class="com.tzsw.provider.service.DatagridAb01ServiceImpl" />-->
+
+</beans>

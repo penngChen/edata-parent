@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzsw.provider.dao.AnalysisAllDao">
+    <cache readOnly="true" size="500" flushInterval="60000" eviction="LRU"/>
+
+    <select id="query_analysis_tjsub_01_by_provincialLevel" parameterType="map" resultType="map">
+        SELECT
+        '36' id,
+        '江西省' departname,
+        36,
+        nvl( b + c + d, 0 ) AS qycount,
+        nvl( b, 0 ) qynoaudit,
+        nvl( c, 0 ) qyaleradyaudit,
+        nvl( d, 0 ) qyailaudit
+        FROM
+        (
+        SELECT
+        sum(
+        decode( dab002, '00', 1 )) AS b,
+        sum(
+        decode( dab002, '01', 1 )) AS c,
+        sum(
+        decode( dab002, '09', 1 )) AS d
+        FROM
+        ab01_web a,
+        t_s_base_user b,
+        t_s_depart c
+        WHERE
+        a.aab001 = b.relationid
+        AND a.aae017 = c.id
+        AND a.dab002 IS NOT NULL
+        AND aae036 &gt;= to_date( #{aae036_begin}, 'YYYY-MM-DD' )
+        AND aae036 &lt; to_date( #{aae036_end}, 'YYYY-MM-DD' ) + 1
+        ) UNION ALL
+        SELECT
+        a.id,
+        a.departname,
+        a.sorts,
+        to_number(
+        nvl( b.dab00, 0 ) + nvl( b.dab01, 0 ) + nvl( b.dab09, 0 )) AS qycount,
+        nvl( b.dab00, 0 ) qynoaudit,
+        nvl( b.dab01, 0 ) qyaleradyaudit,
+        nvl( b.dab09, 0 ) qyailaudit
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        substr( a.id, 0, 4 ) id,
+        sum( CASE WHEN dab002 IS NULL THEN 0 END ) || count( 1 ) aa,
+        sum(
+        decode( b.dab002, '00', 1 )) AS dab00,
+        sum(
+        decode( b.dab002, '01', 1 )) AS dab01,
+        sum(
+        decode( b.dab002, '09', 1 )) AS dab09
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        aae017,
+        dab002
+        FROM
+        ab01_web a,
+        t_s_Base_User b
+        WHERE
+        a.aab001 = b.relationid
+        AND aae036 &gt;= to_date( #{aae036_begin}, 'YYYY-MM-DD' )
+        AND aae036 &lt; to_date( #{aae036_end}, 'YYYY-MM-DD' ) + 1
+        ) b
+        WHERE
+        a.id = b.aae017 ( + )
+        GROUP BY
+        substr( a.id, 0, 4 )) b
+        WHERE
+        a.id = b.id
+        AND length( a.id ) = 4
+        ORDER BY
+        id
+    </select>
+    <select id="query_analysis_tjsub_01_by_notProvincialLevel" parameterType="map" resultType="map">
+        SELECT
+        a.id,
+        a.departname,
+        a.sorts,
+        to_number(
+        nvl( b.dab00, 0 ) + nvl( b.dab01, 0 ) + nvl( b.dab09, 0 )) AS qycount,
+        nvl( b.dab00, 0 ) qynoaudit,
+        nvl( b.dab01, 0 ) qyaleradyaudit,
+        nvl( b.dab09, 0 ) qyailaudit
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        substr( a.id, 0, 6 ) id,
+        sum( CASE WHEN dab002 IS NULL THEN 0 END ) || count( 1 ) aa,
+        sum(
+        decode( dab002, '00', 1 )) AS dab00,
+        sum(
+        decode( dab002, '01', 1 )) AS dab01,
+        sum(
+        decode( dab002, '09', 1 )) AS dab09
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        aae017,
+        dab002
+        FROM
+        ab01_web
+        WHERE
+        1 = 1
+        AND aae036 &gt;= to_date( #{aae036_begin}, 'YYYY-MM-DD' )
+        AND aae036 &lt; to_date( #{aae036_end}, 'YYYY-MM-DD' ) + 1
+        AND aae017 LIKE #{aae017} || '%'
+        ) b
+        WHERE
+        a.id = b.aae017 ( + )
+        GROUP BY
+        substr( a.id, 0, 6 )) b
+        WHERE
+        a.id = b.id
+        AND length( a.id ) = 6
+        AND a.id LIKE #{aae017} || '%'
+        ORDER BY
+        a.sorts,
+        a.id
+    </select>
+
+    <select id="query_analysis_tjsub_02_by_provincialLevel" parameterType="map" resultType="map">
+        SELECT
+        '36' id,
+        '江西省' departname,
+        36,
+        nvl( a, 0 ) + nvl( b, 0 ) + nvl( c, 0 ) + nvl( d, 0 ) + nvl( e, 0 ) + nvl( f, 0 ) AS wgcount,
+        nvl( a, 0 ) wgnoaudit,
+        nvl( b, 0 ) wgalerdyaudit,
+        nvl( c, 0 ) wgpubilcnotic,
+        nvl( d, 0 ) wgappropriation,
+        nvl( e, 0 ) wgaleradyaccount,
+        nvl( f, 0 ) wgfailaudit
+        FROM
+        (
+        SELECT
+        sum(
+        decode( bdc042, '00', 1 )) AS a,
+        sum(
+        decode( bdc042, '01', 1 )) AS b,
+        sum(
+        decode( bdc042, '02', 1 )) AS c,
+        sum(
+        decode( bdc042, '03', 1 )) AS d,
+        sum(
+        decode( bdc042, '04', 1 )) AS e,
+        sum(
+        decode( bdc042, '09', 1 )) AS f
+        FROM
+        dc04 a,
+        ab01_web b
+        WHERE
+        a.aab001 = b.aab001
+        AND a.aae002 &gt;= substr(#{aae036_begin},0,4)
+        AND a.aae002 &lt;= substr(#{aae036_end},0,4)
+        ) UNION ALL
+        SELECT
+        a.id,
+        a.departname,
+        a.sorts,
+        nvl( b.a, 0 ) + nvl( b.b, 0 ) + nvl( b.c, 0 ) + + nvl( b.d, 0 ) + nvl( b.e, 0 ) + nvl( b.f, 0 ) AS wgcount,
+        nvl( b.a, 0 ) wgnoaudit,
+        nvl( b.b, 0 ) wgalerdyaudit,
+        nvl( b.c, 0 ) wgpubilcnotic,
+        nvl( b.d, 0 ) wgappropriation,
+        nvl( b.e, 0 ) wgaleradyaccount,
+        nvl( b.f, 0 ) wgfailaudit
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        substr( a.id, 0, 4 ) id,
+        sum( CASE WHEN bdc042 IS NULL THEN 0 END ) || count( 1 ) aa,
+        sum(
+        decode( b.bdc042, '00', 1 )) AS a,
+        sum(
+        decode( b.bdc042, '01', 1 )) AS b,
+        sum(
+        decode( b.bdc042, '02', 1 )) AS c,
+        sum(
+        decode( b.bdc042, '03', 1 )) AS d,
+        sum(
+        decode( b.bdc042, '04', 1 )) AS e,
+        sum(
+        decode( b.bdc042, '09', 1 )) AS f
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        b.aae017,
+        bdc042
+        FROM
+        dc04 a,
+        ab01_web b
+        WHERE
+        a.aab001 = b.aab001
+        AND a.aae002 &gt;= substr(#{aae036_begin},0,4)
+        AND a.aae002 &lt;= substr(#{aae036_end},0,4)
+        ) b
+        WHERE
+        a.id = b.aae017 ( + )
+        GROUP BY
+        substr( a.id, 0, 4 )) b
+        WHERE
+        a.id = b.id
+        AND length( a.id ) = 4
+        ORDER BY
+        id
+    </select>
+    <select id="query_analysis_tjsub_02_by_notProvincialLevel" parameterType="map" resultType="map">
+        SELECT
+        a.id,
+        a.departname,
+        a.sorts,
+        nvl( b.a, 0 ) + nvl( b.b, 0 ) + nvl( b.c, 0 ) + nvl( b.d, 0 ) + nvl( b.e, 0 ) + nvl( b.f, 0 ) AS wgcount,
+        nvl( b.a, 0 ) wgnoaudit,
+        nvl( b.b, 0 ) wgalerdyaudit,
+        nvl( b.c, 0 ) wgpubilcnotic,
+        nvl( b.d, 0 ) wgappropriation,
+        nvl( b.e, 0 ) wgaleradyaccount,
+        nvl( b.f, 0 ) wgfailaudit
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        substr( a.id, 0, 6 ) id,
+        sum( CASE WHEN bdc042 IS NULL THEN 0 END ) || count( 1 ) aa,
+        sum(
+        decode( b.bdc042, '00', 1 )) AS a,
+        sum(
+        decode( b.bdc042, '01', 1 )) AS b,
+        sum(
+        decode( b.bdc042, '02', 1 )) AS c,
+        sum(
+        decode( b.bdc042, '03', 1 )) AS d,
+        sum(
+        decode( b.bdc042, '04', 1 )) AS e,
+        sum(
+        decode( b.bdc042, '09', 1 )) AS f
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        b.aae017,
+        bdc042
+        FROM
+        dc04 a,
+        ab01_web b
+        WHERE
+        a.aab001 = b.aab001
+        AND a.aae002 &gt;= substr(#{aae036_begin},0,4)
+        AND a.aae002 &lt;= substr(#{aae036_end},0,4)
+        AND b.aae017 LIKE #{aae017} || '%'
+        ) b
+        WHERE
+        a.id = b.aae017 ( + )
+        GROUP BY
+        substr( a.id, 0, 6 )) b
+        WHERE
+        a.id = b.id
+        AND length( a.id ) = 6
+        AND a.id LIKE #{aae017} || '%'
+        ORDER BY
+        a.sorts,
+        a.id
+    </select>
+
+    <select id="query_analysis_tjsub_03_by_provincialLevel" parameterType="map" resultType="map">
+        SELECT
+        '36' id,
+        '江西省' departname,
+        36,
+        nvl( jc10web.a, 0 ) + nvl( jc10web.b, 0 ) + nvl( jc10web.c, 0 ) AS sycount,
+        nvl( jc10web.a, 0 ) synoaudit,
+        nvl( jc10web.b, 0 ) syaleradyaudit,
+        nvl( jc10web.c, 0 ) syfailaudit,
+        jc22.d symonth
+        FROM
+        (
+        SELECT
+        sum(
+        decode( a.bjc109, '00', 1 )) AS a,
+        sum(
+        decode( a.bjc109, '01', 1 )) AS b,
+        sum(
+        decode( a.bjc109, '09', 1 )) AS c
+        FROM
+        jc10_web a,
+        ac02_area b
+        WHERE
+        a.aac001 = b.aac001
+        AND b.area02 = 'jc10_web'
+        AND a.cae001 = '0'
+        AND a.aae036 &gt;= to_date( #{aae036_begin}, 'YYYY-MM-DD' )
+        AND a.aae036 &lt; to_date( #{aae036_end}, 'YYYY-MM-DD' ) + 1
+        ) jc10web,
+        (
+        SELECT
+        nvl( sum( count( c.bjc100 )), 0 ) d
+        FROM
+        jc22 c,
+        ac02_area d
+        WHERE
+        c.aac001 = d.aac001
+        AND d.area02 = 'jc10_web'
+        AND c.ajc150 &gt;= substr(replace(#{aae036_begin},'-'),0,6)--yyyymm格式
+
+        AND c.ajc150 &lt;= substr(replace(#{aae036_end},'-'),0,6) --yyyymm格式
+
+        GROUP BY
+        c.bjc100
+        ) jc22 UNION ALL
+        SELECT
+        a.id,
+        a.departname,
+        a.sorts,
+        nvl( b.a, 0 ) + nvl( b.b, 0 ) + nvl( b.c, 0 ) AS sycount,
+        nvl( b.a, 0 ) synoaudit,
+        nvl( b.b, 0 ) syaleradyaudit,
+        nvl( b.c, 0 ) syfailaudit,
+        nvl( jc22.d, 0 ) symonth
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        substr( a.id, 0, 4 ) id,
+        sum( CASE WHEN bjc109 IS NULL THEN 0 END ) || count( 1 ) aa,
+        sum(
+        decode( b.bjc109, '00', 1 )) AS a,
+        sum(
+        decode( b.bjc109, '01', 1 )) AS b,
+        sum(
+        decode( b.bjc109, '09', 1 )) AS c
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        t.area01,
+        bjc109
+        FROM
+        jc10_web a,
+        ac02_area t
+        WHERE
+        a.aac001 = t.aac001
+        AND t.area02 = 'jc10_web'
+        AND a.aae036 &gt;= to_date( #{aae036_begin}, 'YYYY-MM-DD' )
+        AND a.aae036 &lt; to_date( #{aae036_end}, 'YYYY-MM-DD' ) + 1
+        AND a.cae001 = '0'
+        ) b
+        WHERE
+        a.id = b.area01 ( + )
+        GROUP BY
+        substr( a.id, 0, 4 )) b,
+        (
+        SELECT
+        substr( d.area01, 1, 4 ) id,
+        count( 1 ) d
+        FROM
+        jc22 c,
+        ac02_area d
+        WHERE
+        c.aac001 = d.aac001
+        AND d.area02 = 'jc10_web'
+        AND c.ajc150 &gt;= substr(replace(#{aae036_begin},'-'),0,6) --yyyymm格式
+
+        AND c.ajc150 &lt;= substr(replace(#{aae036_end},'-'),0,6) --yyyymm格式
+
+        GROUP BY
+        substr( d.area01, 1, 4 )) jc22
+        WHERE
+        a.id = b.id
+        AND length( a.id ) = 4
+        AND a.id = jc22.id ( + )
+        ORDER BY
+        id
+    </select>
+    <select id="query_analysis_tjsub_03_by_notProvincialLevel" parameterType="map" resultType="map">
+        SELECT
+        a.id,
+        a.departname,
+        a.sorts,
+        nvl( b.a, 0 ) + nvl( b.b, 0 ) + nvl( b.c, 0 ) AS sycount,
+        nvl( b.a, 0 ) synoaudit,
+        nvl( b.b, 0 ) syaleradyaudit,
+        nvl( b.c, 0 ) syfailaudit,
+        nvl( jc22.d, 0 ) symonth
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        substr( a.id, 0, 6 ) id,
+        sum( CASE WHEN bjc109 IS NULL THEN 0 END ) || count( 1 ) aa,
+        sum(
+        decode( b.bjc109, '00', 1 )) AS a,
+        sum(
+        decode( b.bjc109, '01', 1 )) AS b,
+        sum(
+        decode( b.bjc109, '09', 1 )) AS c
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        t.area01,
+        bjc109
+        FROM
+        jc10_web a,
+        ac02_area t
+        WHERE
+        a.aac001 = t.aac001
+        AND t.area02 = 'jc10_web'
+        AND a.aae036 &gt;= to_date( #{aae036_begin}, 'YYYY-MM-DD' )
+        AND a.aae036 &lt; to_date( #{aae036_end}, 'YYYY-MM-DD' ) + 1
+        AND area01 LIKE #{aae017} || '%'
+        AND a.cae001 = '0'
+        ) b
+        WHERE
+        a.id = b.area01 ( + )
+        GROUP BY
+        substr( a.id, 0, 6 )) b,
+        (
+        SELECT
+        d.area01 id,
+        count( 1 ) d
+        FROM
+        jc22 c,
+        ac02_area d
+        WHERE
+        c.aac001 = d.aac001
+        AND d.area02 = 'jc10_web'
+        AND c.ajc150 &gt;= substr(replace(#{aae036_begin},'-'),0,6) --yyyymm格式
+
+        AND c.ajc150 &lt;= substr(replace(#{aae036_end},'-'),0,6) --yyyymm格式
+
+        GROUP BY
+        d.area01
+        ) jc22
+        WHERE
+        a.id = b.id
+        AND a.id = jc22.id ( + )
+        AND length( a.id ) = 6
+        AND a.id LIKE #{aae017} || '%'
+        ORDER BY
+        a.sorts,
+        a.id
+    </select>
+
+    <select id="query_analysis_tjsub_04_by_provincialLevel" parameterType="map" resultType="map">
+        SELECT
+        '36' id,
+        '江西省' departname,
+        36,
+        nvl( b, 0 ) + nvl( c, 0 ) + nvl( d, 0 ) + nvl( e, 0 ) + nvl( f, 0 ) + nvl( a, 0 ) AS jncount,
+        nvl( a, 0 ) jnnoaudit,
+        nvl( b, 0 ) jnaleradyaudit,
+        nvl( c, 0 ) jnpubilcnotic,
+        nvl( d, 0 ) jnappropriation,
+        nvl( e, 0 ) jnaleradyaccount,
+        nvl( f, 0 ) jnfailaudit
+        FROM
+        (
+        SELECT
+        sum(
+        decode( a.bdc057, '00', 1 )) AS a,
+        sum(
+        decode( a.bdc057, '01', 1 )) AS b,
+        sum(
+        decode( a.bdc057, '02', 1 )) AS c,
+        sum(
+        decode( a.bdc057, '03', 1 )) AS d,
+        sum(
+        decode( a.bdc057, '04', 1 )) AS e,
+        sum(
+        decode( a.bdc057, '09', 1 )) AS f
+        FROM
+        dc05 a,
+        ac02_area b,
+        t_S_depart c
+        WHERE
+        a.aac001 = b.aac001
+        AND a.cae001 = '0'
+        AND b.area01 = c.id
+        AND b.area02 = 'dc05'
+        AND a.aae036 &gt;= to_date( #{aae036_begin}, 'YYYY-MM-DD' )
+        AND a.aae036 &lt; to_date( #{aae036_end}, 'YYYY-MM-DD' ) + 1
+        ) UNION ALL
+        SELECT
+        a.id,
+        a.departname,
+        a.sorts,
+        nvl( b.a, 0 ) + nvl( b.b, 0 ) + nvl( b.c, 0 ) + nvl( b.d, 0 ) + nvl( b.e, 0 ) + nvl( b.f, 0 ) AS jncount,
+        nvl( b.a, 0 ) jnnoaudit,
+        nvl( b.b, 0 ) jnaleradyaudit,
+        nvl( b.c, 0 ) jnpubilcnotic,
+        nvl( b.d, 0 ) jnappropriation,
+        nvl( b.e, 0 ) jnaleradyaccount,
+        nvl( b.f, 0 ) jnfailaudit
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        substr( a.id, 0, 4 ) id,
+        sum( CASE WHEN bdc057 IS NULL THEN 0 END ) || count( 1 ) aa,
+        sum(
+        decode( b.bdc057, '00', 1 )) AS a,
+        sum(
+        decode( b.bdc057, '01', 1 )) AS b,
+        sum(
+        decode( b.bdc057, '02', 1 )) AS c,
+        sum(
+        decode( b.bdc057, '03', 1 )) AS d,
+        sum(
+        decode( b.bdc057, '04', 1 )) AS e,
+        sum(
+        decode( b.bdc057, '09', 1 )) AS f
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        t.area01,
+        bdc057
+        FROM
+        dc05 a,
+        ac02_area t
+        WHERE
+        a.aac001 = t.aac001
+        AND a.aae036 &gt;= to_date( #{aae036_begin}, 'YYYY-MM-DD' )
+        AND a.aae036 &lt; to_date( #{aae036_end}, 'YYYY-MM-DD' ) + 1
+        AND a.cae001 = '0'
+        AND t.area02 = 'dc05'
+        ) b
+        WHERE
+        a.id = b.area01 ( + )
+        GROUP BY
+        substr( a.id, 0, 4 )) b
+        WHERE
+        a.id = b.id
+        AND length( a.id ) = 4
+        ORDER BY
+        id
+    </select>
+    <select id="query_analysis_tjsub_04_by_notProvincialLevel" parameterType="map" resultType="map">
+        SELECT
+        a.id,
+        a.departname,
+        a.sorts,
+        nvl( b.a, 0 ) + nvl( b.b, 0 ) + nvl( b.c, 0 ) + + nvl( b.d, 0 ) + nvl( b.e, 0 ) + nvl( b.f, 0 ) AS jncount,
+        nvl( b.a, 0 ) jnnoaudit,
+        nvl( b.b, 0 ) jnaleradyaudit,
+        nvl( b.c, 0 ) jnpubilcnotic,
+        nvl( b.d, 0 ) jnappropriation,
+        nvl( b.e, 0 ) jnaleradyaccount,
+        nvl( b.f, 0 ) jnfailaudit
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        substr( a.id, 0, 6 ) id,
+        sum( CASE WHEN bdc057 IS NULL THEN 0 END ) || count( 1 ) aa,
+        sum(
+        decode( b.bdc057, '00', 1 )) AS a,
+        sum(
+        decode( b.bdc057, '01', 1 )) AS b,
+        sum(
+        decode( b.bdc057, '02', 1 )) AS c,
+        sum(
+        decode( b.bdc057, '03', 1 )) AS d,
+        sum(
+        decode( b.bdc057, '04', 1 )) AS e,
+        sum(
+        decode( b.bdc057, '09', 1 )) AS f
+        FROM
+        t_s_departy a,
+        (
+        SELECT
+        t.area01,
+        bdc057
+        FROM
+        dc05 a,
+        ac02_area t
+        WHERE
+        a.aac001 = t.aac001
+        AND a.aae036 &gt;= to_date( #{aae036_begin}, 'YYYY-MM-DD' )
+        AND a.aae036 &lt; to_date( #{aae036_end}, 'YYYY-MM-DD' ) + 1
+        AND area01 LIKE #{aae017} || '%'
+        AND area02 = 'dc05'
+        AND a.cae001 = '0'
+        ) b
+        WHERE
+        a.id = b.area01 ( + )
+        GROUP BY
+        substr( a.id, 0, 6 )) b
+        WHERE
+        a.id = b.id
+        AND length( a.id ) = 6
+        AND a.id LIKE #{aae017} || '%'
+        ORDER BY
+        a.sorts,
+        a.id
+    </select>
+
+</mapper>

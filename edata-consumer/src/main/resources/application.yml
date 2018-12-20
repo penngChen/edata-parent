@@ -1,0 +1,9 @@
+server:
+  port: 9999
+
+#返回字段值为null时，不显示字段名称
+#spring:
+#  jackson:
+#    default-property-inclusion: non_null
+
+

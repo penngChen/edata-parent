@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzsw.provider.dao.UnemploymentqueryDao">
+    <cache readOnly="true" size="500" flushInterval="60000" eviction="LRU" />
+
+    <select id="query_ac01" resultType="map" parameterType="map">
+        SELECT
+        c.aac001,
+--         a.id userid,
+--         b.area01,
+        d.departname,
+        a.username,
+        c.aac002,
+        c.aac003,
+        c.aac004,
+        to_char(c.aac006,'yyyy-mm-dd') aac006,
+--         c.aac009,
+        c.aac011,
+        c.aac026
+--         nvl(to_char(c.aae036,'yyyy-mm-dd'),'-') aae036,
+--         g.bpic02 bpic03_top,
+--         g.bpic03 bpic03_bottom
+        FROM
+        t_s_base_user a,
+        ac02_area b,
+        ac01 c,
+        t_s_depart d
+        WHERE
+        a.relationid = b.aac001
+        AND a.relationid = c.aac001
+        AND b.area01 = d.id
+        AND length( a.username ) = 11
+        AND c.aae100 = '1'
+        AND b.area02 = 't_s_base_user'
+        AND b.area01 LIKE #{aae017} || '%'
+        <if test="aac002!='' and aac002!=null">
+            AND c.aac002 = #{aac002}
+        </if>
+
+        <if test="aac003!='' and aac003!=null">
+            AND c.aac003 like '%' || #{aac003} || '%'
+        </if>
+
+        <if test="aac004!='' and aac004!=null">
+            AND c.aac004 = #{aac004}
+        </if>
+        order by c.aae036 DESC
+    </select>
+
+    <select id="query_ab01" parameterType="map" resultType="map">
+        SELECT
+        a.aab001,
+        c.departname,
+        b.username,
+        a.aab004,
+        a.aab070,
+        a.aab071,
+        a.aae004,
+        a.aae005,
+--         a.aab022,
+--         a.aae015,
+        a.aab019,
+        a.aae006,
+        to_char(a.aae036,'yyyy-mm-dd') aae036,
+--         a.aae017,
+--         b.id userid,
+        a.dab002
+        FROM
+        ab01_web a,
+        t_s_base_user b,
+        t_s_depart c
+        WHERE
+        a.aab001 = b.relationid
+        AND a.aae017 = c.id
+        AND a.dab002 IS NOT NULL
+        AND a.aae017 LIKE #{aae017} || '%'
+
+        <if test="aab004!='' and aab004!=null">
+            AND a.aab004 LIKE '%' || #{aab004} || '%'
+        </if>
+
+        <if test="aab070!='' and aab070!=null">
+            AND a.aab070 = #{aab070}
+        </if>
+        <if test="aab019!='' and aab019!=null">
+            AND a.aab019 = #{aab019}
+        </if>
+        <if test="dab002!='' and dab002!=null">
+            AND a.dab002 = #{dab002}
+        </if>
+        <if test="aae036_begin!='' and aae036_begin!=null">
+            AND a.aae036 &gt;= to_date(#{aae036_begin},'yyyy-mm-dd')
+        </if>
+        <if test="aae036_end!='' and aae036_end!=null">
+            AND a.aae036 &lt; to_date(#{aae036_end}, 'yyyy-mm-dd') + 1
+        </if>
+        ORDER BY
+        a.aae036 DESC
+    </select>
+
+    <select id="query_dc04" resultType="map" parameterType="map" >
+        SELECT
+        a.bdc040,
+        c.departname,
+        b.aab001,
+        a.aae002,
+        b.aab004,
+        b.aab070,
+        b.aae004,
+        b.aae005,
+        a.aae036,
+        a.bdc042,
+        a.bdc041
+        FROM
+        dc04 a,
+        ab01_web b,
+        t_s_Depart c
+        WHERE
+        a.aab001 = b.aab001
+        AND b.aae017 = c.id
+        AND b.aae017 LIKE #{aae017} || '%'
+
+        <if test="aae002!='' and aae002!=null">
+            AND a.aae002 = #{aae002}
+        </if>
+
+        <if test="aab004!='' and aab004!=null">
+            AND b.aab004 LIKE '%' || #{aab004} || '%'
+        </if>
+
+        <if test="bdc042!='' and bdc042!=null">
+            AND a.bdc042 = #{bdc042}
+        </if>
+
+        <if test="aab070!='' and aab070!=null">
+            AND b.aab070 = #{aab070}
+        </if>
+        <if test="aae036_begin!='' and aae036_begin!=null">
+            AND a.aae036 &gt;= to_date(#{aae036_begin},'yyyy-mm-dd')
+        </if>
+        <if test="aae036_end!='' and aae036_end!=null">
+            AND a.aae036 &lt; to_date(#{aae036_end}, 'yyyy-mm-dd') + 1
+        </if>
+        ORDER BY
+        a.aae002 DESC
+    </select>
+
+    <select id="query_jc10web" parameterType="map" resultType="map" >
+        select a.aac001,
+        a.aac002,
+        a.aac003,
+        a.aac004,
+        c.departname,
+        b.bjc100,
+--         b.ajc097,
+--         b.ajc140,
+--         b.bjc403,
+--         b.bjc404,
+--         b.aae005,
+        b.aae010,
+        b.bjc108,
+        b.bjc109,
+        to_char(b.aae036,'yyyy-mm-dd') aae036,
+        b.aae009,
+--         b.aae008,
+        b.bjc01b,
+        b.bjc01c,
+--         b.bjc01d,
+--         b.bjc01e,
+        b.bjc01k,
+        b.bjc01f,
+        b.bjc01h,
+        b.bjc01i
+        from ac01 a, jc10_web b, t_s_Depart c, ac02_area d
+        where b.aac001 = a.aac001
+        and b.bjc100 = d.area03
+        and d.area01 = c.id
+        and b.cae001 = '0'
+        and d.area02 = 'jc10_web'
+        and d.area01 LIKE #{aae017} || '%'
+        <if test="aac002!='' and aac002!=null">
+            and a.aac002=#{aac002}
+        </if>
+        <if test="aac003!='' and aac003!=null">
+            and a.aac003 LIKE '%' || #{aac003} || '%'
+        </if>
+        <if test="bjc01h!='' and bjc01h!=null">
+            and b.bjc01h LIKE '%' || #{bjc01h} || '%'
+        </if>
+        <if test="bjc01f!='' and bjc01f!=null">
+            and b.bjc01f=#{bjc01f}
+        </if>
+        <if test="bjc109!='' and bjc109!=null">
+            and b.bjc109=#{bjc109}
+        </if>
+        <if test="aae036_begin!='' and aae036_begin!=null">
+            AND b.aae036 &gt;= to_date(#{aae036_begin},'yyyy-mm-dd')
+        </if>
+        <if test="aae036_end!='' and aae036_end!=null">
+            AND b.aae036 &lt; to_date(#{aae036_end}, 'yyyy-mm-dd') + 1
+        </if>
+        order by b.aae036 desc
+    </select>
+
+    <select id="query_dc05" resultType="map" parameterType="map" >
+        select a.aac001,
+        a.aac002,
+        a.aac003,
+--         a.aac004,
+        c.departname,
+        b.bdc050,
+        b.bdc051,
+        b.bdc052,
+        b.bdc053,
+        b.bdc054,
+        b.bdc055,
+        to_char(b.bdc056,'yyyy-mm-dd') bdc056,
+        b.bdc057,
+        b.bdc058,
+--         b.aae013,
+        to_char(b.aae036,'yyyy-mm-dd') aae036,
+        b.bdc059,
+--         b.bdc05a,
+--         b.aae008,
+        b.aae009,
+        b.aae010,
+        b.bdc05b,
+--         b.bdc05c,
+--         b.bdc05d,
+--         b.bdc05e,
+--         b.bdc05f,
+--         b.bdc05g,
+--         b.bdc05h,
+--         b.bdc05i,
+--         to_char(b.bdc05j,'yyyy-mm-dd') bdc05j,
+--         to_char(b.bdc05k,'yyyy-mm-dd') bdc05k,
+--         to_char(b.bdc05l,'yyyy-mm-dd') bdc05l,
+        b.bdc05m
+--         b.bdc05n
+        from ac01 a, dc05 b, t_s_Depart c, ac02_area d
+        where b.aac001 = a.aac001
+        and b.bdc050 = d.area03
+        and d.area01 = c.id
+        and b.cae001 = '0'
+        and d.area02 = 'dc05'
+        and d.area01 like #{aae017} || '%'
+        <if test="aac002!='' and aac002!=null">
+            and a.aac002=#{aac002}
+        </if>
+        <if test="aac003!='' and aac003!=null">
+            and a.aac003 LIKE '%' || #{aac003} || '%'
+        </if>
+        <if test="bdc053!='' and bdc053!=null">
+            and b.bdc053 LIKE '%' || #{bdc053} || '%'
+        </if>
+        <if test="bdc057!='' and bdc057!=null">
+            and b.bdc057=#{bdc057}
+        </if>
+        <if test="bdc052!='' and bdc052!=null">
+            and b.bdc052=#{bdc052}
+        </if>
+        <if test="bdc051!='' and bdc051!=null">
+            and b.bdc051 LIKE '%' || #{bdc051} || '%'
+        </if>
+        <if test="bdc054!='' and bdc054!=null">
+            and b.bdc054 LIKE '%' || #{bdc054} || '%'
+        </if>
+
+        <if test="bdc056_begin!='' and bdc056_begin!=null">
+            AND b.bdc056 &gt;= to_date(#{bdc056_begin},'yyyy-mm-dd')
+        </if>
+        <if test="bdc056_end!='' and bdc056_end!=null">
+            AND b.bdc056 &lt; to_date(#{bdc056_end}, 'yyyy-mm-dd') + 1
+        </if>
+        <if test="aae036_begin!='' and aae036_begin!=null">
+            AND b.aae036 &gt;= to_date(#{aae036_begin},'yyyy-mm-dd')
+        </if>
+        <if test="aae036_end!='' and aae036_end!=null">
+            AND b.aae036 &lt; to_date(#{aae036_end}, 'yyyy-mm-dd') + 1
+        </if>
+        order by b.aae036 desc
+    </select>
+
+    <select id="goAllDownload" parameterType="string" resultType="map">
+        SELECT
+        a.BPIC03 bpic03_top,
+        b.BPIC03 bpic03_bottom
+        FROM
+        ( SELECT BPIC03 FROM AC01_PIC WHERE BPIC02 = '02' AND AAC001 = #{id1} group by BPIC03 ) a ,
+        ( SELECT BPIC03 FROM AC01_PIC WHERE BPIC02 = '03' AND AAC001 = #{id2} group by BPIC03 ) b
+    </select>
+
+</mapper>
